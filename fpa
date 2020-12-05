@@ -1,0 +1,181 @@
+/*Author: Team Fermaid. Microsoft Learn Student Ambassador Hackhton
+ * Year: December, 2020.
+ * This code runs on a device that can be used by farmers to predict crop or soil that will thrive well under specifies conditions
+ */
+
+//Include Neccessary Libraries
+#include <Keypad.h>
+#include <LiquidCrystal.h>
+
+//Moisture sensor variables
+
+int moistureSensor = A0;
+int sensorValue = analogRead(A0);
+int waterContent;;
+
+//Keypard Variables
+String pad;
+const byte ROWS = 4; //four rows
+const byte COLS = 4; //three columns
+char keys[ROWS][COLS] = {
+  {'1','4','7', '*'},
+  {'2','5','8', '0'},
+  {'3','6','9', '#'},
+  {'A','B','C', 'D'}
+};
+byte rowPins[ROWS] = {9, 8, 7, 6}; //connect to the row pinouts of the keypad
+byte colPins[COLS] = {5, 4, 3, 2}; //connect to the column pinouts of the keypad
+
+Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
+
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);  // sets the interfacing pins
+
+void introNotes(){
+  lcd.setCursor(8,1);           //sets the cursor at line 0 column 0
+  lcd.print("FPA"); // prints characters - 20x4 LCD MODULE
+  delay(3000);
+  lcd.clear();
+  lcd.setCursor(4,1);
+  lcd.print("Team farmaid");
+  delay(2000);
+  lcd.clear();
+  lcd.setCursor(6,1);
+  lcd.print("WELCOME");
+  delay(2000);
+  lcd.clear();
+}
+
+void ReCrop(){
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Insert Senor...");
+      delay(6000);
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Water Content = ");
+      lcd.setCursor(16, 0);
+      waterContent = map(analogRead(A0), 550, 10, 0, 100);
+      lcd.print(waterContent);
+      lcd.setCursor(19, 0);
+      lcd.print("%");
+      lcd.setCursor(0, 2);
+      lcd.print("Showing crop for the");
+      lcd.setCursor(0,3);
+      lcd.print("soil . . .");
+      delay(7000);
+      lcd.clear();
+      if(waterContent <= 30){
+        lcd.setCursor(0,0);
+        lcd.print("Peper");
+        lcd.setCursor(0,1);
+        lcd.print("Okra");
+        lcd.setCursor(0,2);
+        lcd.print("Potato");
+        lcd.setCursor(0,3);
+        lcd.print("Eggplant");
+        lcd.setCursor(5,0);
+        lcd.print("Cowpea");
+      }
+      else if(waterContent > 30 && waterContent <= 60){
+        lcd.setCursor(0,0);
+        lcd.print("Maize");
+        lcd.setCursor(0,1);
+        lcd.print("Citrus");
+        lcd.setCursor(0,2);
+        lcd.print("Yam");
+        lcd.setCursor(0,3);
+        lcd.print("Melon");
+        lcd.setCursor(9,0);
+        lcd.print("Onion");
+        lcd.setCursor(9,1);
+        lcd.print("Lettuce");
+        lcd.setCursor(9,2);
+        lcd.print("Beans");
+      }
+      else if(waterContent > 60){
+        lcd.setCursor(0,0);
+        lcd.print("Soya Bean");
+        lcd.setCursor(0,1);
+        lcd.print("Suger cane");
+        lcd.setCursor(0,2);
+        lcd.print("Millet");
+        lcd.setCursor(0,3);
+        lcd.print("Tomato");
+        lcd.setCursor(5,0);
+        lcd.print("Rice");
+      }
+}
+
+void stepone(){       //First option
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Select Device Option");
+  lcd.setCursor(0, 1);
+  lcd.print("1. Recommend Crop");
+  lcd.setCursor(0, 2);
+  lcd.print("2. Recommend SOil");
+  lcd.setCursor(0, 3);
+  lcd.print("3. Monitor Farm");
+}
+
+void getFinput(){       //first option choice
+   char key = keypad.getKey();
+    if(key== '1'){
+             ReCrop();
+    }
+     if(key =='2'){
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("Select a crop");
+        lcd.setCursor(0,1);
+        lcd.print("1.Maize");
+        lcd.setCursor(0,2);
+        lcd.print("2.Cassava");
+        lcd.setCursor(0,3);
+        lcd.print("3.Beans");
+        lcd.setCursor(10,1);
+        lcd.print("4.Potato");
+        lcd.setCursor(10,2);
+        lcd.print("5.Pepper");
+        lcd.setCursor(10,3);
+        lcd.print("6.Eggplant");
+/*
+            char option = keypad.getKey();
+            if(option == '1' && option!= NO_KEY){   //Soil Recommendations goes here
+              lcd.clear();
+              lcd.print("Hello");
+            }
+            */
+        }
+       
+}
+
+void setup()
+{
+  Serial.begin(9600);
+  lcd.begin(20, 4);  // initializes the 20x4 LCD
+  keypad.addEventListener(keypadEvent); //add an event listener for this keypad
+  lcd.setCursor(0,0);
+  
+ introNotes();
+ stepone();
+ 
+}
+
+void loop()
+{
+
+  getFinput();
+
+}
+
+//take care of some special events
+void keypadEvent(KeypadEvent key){
+  switch (keypad.getState()){
+    case PRESSED:
+      switch (key){
+        case '#': lcd.clear();lcd.setCursor(4,1);lcd.print("HAPPY FARMING");delay(5000);lcd.noDisplay(); break;
+             }
+  }
+}
+
